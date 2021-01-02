@@ -3,8 +3,12 @@
   "version": "0.0.1",
   "description": "idk",
   "main": "dist/index.js",
-  "dependencies": {},
-  "devDependencies": {},
+  "dependencies": {
+    "veld-chat-api": "github:million900o/veld-chat-api"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.19"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
