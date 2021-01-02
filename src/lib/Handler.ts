@@ -1,4 +1,6 @@
 import { EventEmitter } from 'events';
+import { readdir, statSync } from 'fs';
+import { resolve } from 'path';
 
 import HandlerOptions from '../types/HandlerOptions'
 
@@ -6,7 +8,8 @@ import Command from "./Command";
 
 const defaultOptions: HandlerOptions = {
   defaultPrefix: '!',
-  prefixes: new Map()
+  prefixes: new Map(),
+  commandDir: 'commands',
 }
 
 class Handler {
@@ -14,13 +17,16 @@ class Handler {
   commands: Map<string, Command>;
   alaises: Map<string, Command>;
   constructor(options: HandlerOptions, client: EventEmitter) {
-    this.options = Object.assign(options, defaultOptions)
-    client.on('message', this.runMessage);
+    this.options = Object.assign(defaultOptions, options)
+    this.commands = new Map();
+    this.alaises = new Map();
+    this.loadCommands(resolve(this.options.commandDir))
+    client.on('message', (m) => this.runMessage(m));
   }
-
+  
   async runMessage(msg: any): Promise<undefined> {
     if (!msg) return;
-    const prefix = this.options.prefixes.get(msg.guild ? msg.guild.id : null) || this.options.defaultPrefix;
+    const prefix = this.options.defaultPrefix;
     if (msg.content.startsWith(prefix)) {
       const contentArray = msg.content.slice(prefix.length).split(' ').filter((e: string) => e)
       const command = this.getCommand(contentArray);
@@ -39,6 +45,31 @@ class Handler {
 
   getCommand(content: string[]): Command | undefined {
     return this.alaises.get(content[0]) || this.commands.get(content[0]) || undefined;
+  }
+
+  loadCommands(dir: string) {
+    readdir(dir, (err, files) => {
+      if(err) throw err;
+      files.forEach(file => {
+        const stat = statSync(dir + '/' + file)
+        if(stat.isDirectory()) return this.loadCommands(dir + '/' + file);
+        else this.loadCommand(dir + '/' + file);
+      });
+    })
+  }
+
+  loadCommand(path: string): boolean {
+    try {
+      const command: Command = new (require(resolve(path)))(this);
+      this.commands.set(command.options.name, command)
+      command.options.aliases.forEach((alias: string) => {
+        this.alaises.set(alias, command);
+      })
+      return true;
+    } catch (err) {
+      console.warn(err);
+      return false;
+    }
   }
 }
 

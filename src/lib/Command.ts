@@ -14,7 +14,7 @@ class Command {
   options: CommandOptions;
   handler: Handler;
   constructor(options: CommandOptions, handler: Handler) {
-    this.options = Object.assign(options, defaultOptions)
+    this.options = Object.assign(defaultOptions, options)
     this.handler = handler
   };
 
