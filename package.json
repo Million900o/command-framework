@@ -4,6 +4,7 @@
   "description": "idk",
   "main": "dist/index.js",
   "dependencies": {
+    "events": "^3.2.0",
     "veld-chat-api": "github:million900o/veld-chat-api"
   },
   "devDependencies": {
