@@ -1,0 +1,21 @@
+{
+  "name": "command-framework",
+  "version": "0.0.1",
+  "description": "idk",
+  "main": "dist/index.js",
+  "dependencies": {},
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Million900o/command-framework.git"
+  },
+  "author": "MILLION",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Million900o/command-framework/issues"
+  },
+  "homepage": "https://github.com/Million900o/command-framework#readme"
+}
