@@ -59,8 +59,8 @@ class Handler {
           const path = dir + '/' + file;
           try {
             const command = new (require(resolve(path)))(this, this.client);
-            this.commands.set(command.options.name, command)
-            command.options.aliases.forEach((alias: string) => {
+            this.commands.set(command.name, command)
+            command.aliases.forEach((alias: string) => {
               this.aliases.set(alias, command);
             })
             return true;
