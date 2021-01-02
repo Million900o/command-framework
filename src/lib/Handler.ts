@@ -15,12 +15,12 @@ const defaultOptions: HandlerOptions = {
 class Handler {
   options: HandlerOptions;
   commands: Map<string, Command>;
-  alaises: Map<string, Command>;
+  aliases: Map<string, Command>;
   client: EventEmitter
   constructor(options: HandlerOptions, client: EventEmitter) {
     this.options = Object.assign(defaultOptions, options)
     this.commands = new Map();
-    this.alaises = new Map();
+    this.aliases = new Map();
     this.client = client;
     this.loadCommands(resolve(this.options.commandDir))
     client.on('message', (m) => this.runMessage(m));
@@ -46,7 +46,7 @@ class Handler {
   }
 
   getCommand(content: string[]): Command | undefined {
-    return this.alaises.get(content[0]) || this.commands.get(content[0]) || undefined;
+    return this.aliases.get(content[0]) || this.commands.get(content[0]) || undefined;
   }
 
   loadCommands(dir: string) {
@@ -65,7 +65,7 @@ class Handler {
       const command: Command = new (require(resolve(path)))(this, this.client);
       this.commands.set(command.options.name, command)
       command.options.aliases.forEach((alias: string) => {
-        this.alaises.set(alias, command);
+        this.aliases.set(alias, command);
       })
       return true;
     } catch (err) {
