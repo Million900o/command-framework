@@ -13,9 +13,7 @@
     "strictNullChecks": false,
     "moduleResolution": "node",
     "esModuleInterop": true,
-    "resolveJsonModule": true,
-    "allowJs": true,
-    "checkJs": true
+    "resolveJsonModule": true
   },
   "include": ["src/**/*"]
 }
