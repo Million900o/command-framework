@@ -1,3 +1,4 @@
+import { EventEmitter } from 'events';
 import CommandOptions from '../types/CommandOptions';
 import Handler from './Handler'
 
@@ -13,9 +14,11 @@ const defaultOptions: CommandOptions = {
 class Command {
   options: CommandOptions;
   handler: Handler;
-  constructor(options: CommandOptions, handler: Handler) {
-    this.options = Object.assign(defaultOptions, options)
-    this.handler = handler
+  client: EventEmitter
+  constructor(options: CommandOptions, handler: Handler, client: EventEmitter) {
+    this.options = Object.assign(defaultOptions, options);
+    this.handler = handler;
+    this.client = client;
   };
 
   async run(message: any, args: string[]) {

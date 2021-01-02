@@ -16,10 +16,12 @@ class Handler {
   options: HandlerOptions;
   commands: Map<string, Command>;
   alaises: Map<string, Command>;
+  client: EventEmitter
   constructor(options: HandlerOptions, client: EventEmitter) {
     this.options = Object.assign(defaultOptions, options)
     this.commands = new Map();
     this.alaises = new Map();
+    this.client = client;
     this.loadCommands(resolve(this.options.commandDir))
     client.on('message', (m) => this.runMessage(m));
   }
@@ -60,7 +62,7 @@ class Handler {
 
   loadCommand(path: string): boolean {
     try {
-      const command: Command = new (require(resolve(path)))(this);
+      const command: Command = new (require(resolve(path)))(this, this.client);
       this.commands.set(command.options.name, command)
       command.options.aliases.forEach((alias: string) => {
         this.alaises.set(alias, command);
