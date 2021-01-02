@@ -14,9 +14,23 @@ const defaultOptions: CommandOptions = {
 class Command {
   options: CommandOptions;
   handler: Handler;
-  client: EventEmitter
+  client: EventEmitter;
+  // Options
+  name: string;
+  aliases: string[];
+  requiredPermissions: string[] | null;
+  botPermissions: number;
+  description: string;
+  disabled: boolean;
   constructor(options: CommandOptions, handler: Handler, client: EventEmitter) {
-    this.options = Object.assign(defaultOptions, options);
+    // Options
+    this.name = options.name;
+    this.aliases = options.aliases;
+    this.requiredPermissions = options.requiredPermissions;
+    this.botPermissions = options.botPermissions;
+    this.description = options.description;
+    this.disabled = options.disabled;
+    // Other
     this.handler = handler;
     this.client = client;
   };
