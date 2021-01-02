@@ -25,7 +25,7 @@ class Handler {
     this.loadCommands(resolve(this.options.commandDir))
     client.on('message', (m) => this.runMessage(m));
   }
-  
+
   async runMessage(msg: any): Promise<undefined> {
     if (!msg || !msg.content) return;
     const prefix = this.options.defaultPrefix;
@@ -51,27 +51,26 @@ class Handler {
 
   loadCommands(dir: string) {
     readdir(dir, (err, files) => {
-      if(err) throw err;
+      if (err) throw err;
       files.forEach(file => {
         const stat = statSync(dir + '/' + file)
-        if(stat.isDirectory()) return this.loadCommands(dir + '/' + file);
-        else this.loadCommand(dir + '/' + file);
+        if (stat.isDirectory()) return this.loadCommands(dir + '/' + file);
+        else {
+          const path = dir + '/' + file;
+          try {
+            const command: Command = new (require(resolve(path)))(this, this.client);
+            this.commands.set(command.options.name, command)
+            command.options.aliases.forEach((alias: string) => {
+              this.aliases.set(alias, command);
+            })
+            return true;
+          } catch (err) {
+            console.warn(err);
+            return false;
+          }
+        }
       });
     })
-  }
-
-  loadCommand(path: string): boolean {
-    try {
-      const command: Command = new (require(resolve(path)))(this, this.client);
-      this.commands.set(command.options.name, command)
-      command.options.aliases.forEach((alias: string) => {
-        this.aliases.set(alias, command);
-      })
-      return true;
-    } catch (err) {
-      console.warn(err);
-      return false;
-    }
   }
 }
 
