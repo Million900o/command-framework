@@ -27,7 +27,7 @@ class Handler {
   }
   
   async runMessage(msg: any): Promise<undefined> {
-    if (!msg) return;
+    if (!msg || !msg.content) return;
     const prefix = this.options.defaultPrefix;
     if (msg.content.startsWith(prefix)) {
       const contentArray = msg.content.slice(prefix.length).split(' ').filter((e: string) => e)
