@@ -12,8 +12,10 @@ const defaultOptions: CommandOptions = {
 
 class Command {
   options: CommandOptions;
-  constructor(options: CommandOptions, Handler: Handler) {
+  handler: Handler;
+  constructor(options: CommandOptions, handler: Handler) {
     this.options = Object.assign(options, defaultOptions)
+    this.handler = handler
   };
 
   async run(message: any, args: string[]) {
