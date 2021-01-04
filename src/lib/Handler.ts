@@ -58,11 +58,12 @@ class Handler {
         else {
           const path = dir + '/' + file;
           try {
-            const command = new (require(resolve(path)))(this, this.client);
+            const command: Command = new (require(resolve(path)))(this, this.client);
             this.commands.set(command.name, command)
             command.aliases.forEach((alias: string) => {
               this.aliases.set(alias, command);
             })
+            console.log('Loaded Command', command.name)
             return true;
           } catch (err) {
             console.warn(err);
