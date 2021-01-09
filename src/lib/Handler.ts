@@ -3,6 +3,7 @@ import { readdir, statSync } from 'fs';
 import { resolve } from 'path';
 
 import HandlerOptions from '../types/HandlerOptions'
+import Cooldown from '../types/CommandCooldown';
 
 import Command from "./Command";
 
@@ -19,6 +20,7 @@ class Handler {
   aliases: Map<string, Command>;
   client: EventEmitter;
   botPermissions: object;
+  cooldownBucket: object;
   constructor(options: HandlerOptions, client: EventEmitter) {
     this.options = Object.assign(defaultOptions, options)
     this.botPermissions = options.botPermissions;
@@ -39,7 +41,17 @@ class Handler {
         if (command) {
           try {
             if (command.botPermissions) {
-              if (this.botPermissions[command.botPermissions].run(msg, command)) return;
+              if (this.botPermissions[command.botPermissions](msg, command)) return;
+            }
+            if(command.cooldown)  {
+              const cooldown = command.cooldown as Cooldown;
+              let userCooldown = this.cooldownBucket[`${msg.author.id}${command.name}`] || 0;
+              if(userCooldown > cooldown.bucket) return;
+              userCooldown++;
+              this.cooldownBucket[`${msg.author.id}${command.name}`] = userCooldown
+              setTimeout(() => {
+                this.cooldownBucket[`${msg.author.id}${command.name}`]--;
+              }, cooldown.time || 1000 * 60 * 1);
             }
             await command.run(msg, contentArray.slice(1));
             return;

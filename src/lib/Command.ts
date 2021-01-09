@@ -1,5 +1,8 @@
 import { EventEmitter } from 'events';
+
 import CommandOptions from '../types/CommandOptions';
+import Cooldown from '../types/CommandCooldown';
+
 import Handler from './Handler'
 
 const defaultOptions: CommandOptions = {
@@ -22,6 +25,7 @@ class Command {
   botPermissions: number;
   description: string;
   disabled: boolean;
+  cooldown: Cooldown | null;
   constructor(options: CommandOptions, handler: Handler, client: EventEmitter) {
     // Options
     this.name = options.name;
