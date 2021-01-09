@@ -43,27 +43,25 @@ class Handler {
                                 return;
                             if (command.cooldown) {
                                 const cooldown = command.cooldown;
-                                let userCooldown = this.cooldownBucket[`${msg.author.id}${command.name}`] || 0;
-                                if (userCooldown > cooldown.bucket) {
-                                    // TODO: Make response use a real time
+                                let userCooldown = this.cooldownBucket[`${msg.author.id}${command.name}`] || [];
+                                if (userCooldown.length > cooldown.bucket) {
+                                    const cooldownTime = ((userCooldown[0] - Date.now()) / 1000).toFixed(2);
                                     const response = {
                                         embed: {
-                                            title: `Slow down. You must wait ${(cooldown.time / 1000).toFixed(2)}s to use this command again.`,
-                                            color: 0xE74C3C
+                                            title: `Slow down. You must wait ${cooldownTime}s to use this command again.`,
+                                            color: 0xFF0000
                                         }
                                     };
                                     msg.reply(response);
                                     return;
                                 }
                                 ;
-                                userCooldown++;
+                                userCooldown.push(Date.now() + cooldown.time);
                                 this.cooldownBucket[`${msg.author.id}${command.name}`] = userCooldown;
                                 setTimeout(() => {
-                                    this.cooldownBucket[`${msg.author.id}${command.name}`] == 1 ? delete this.cooldownBucket[`${msg.author.id}${command.name}`] : this.cooldownBucket[`${msg.author.id}${command.name}`]--;
+                                    this.cooldownBucket[`${msg.author.id}${command.name}`].length == 1 ? delete this.cooldownBucket[`${msg.author.id}${command.name}`] : this.cooldownBucket[`${msg.author.id}${command.name}`].shift();
                                 }, cooldown.time || 1000 * 60 * 1);
                             }
-                            else
-                                console.log('none');
                             yield command.run(msg, contentArray.slice(1));
                             return;
                         }
@@ -82,7 +80,8 @@ class Handler {
             catch (err) {
                 const response = {
                     embed: {
-                        title: `Err: ${err}`
+                        title: `Err: ${err}`,
+                        color: 0xFF0000
                     }
                 };
                 msg.reply(response).catch(console.log);
