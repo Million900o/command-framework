@@ -10,15 +10,18 @@ const defaultOptions: HandlerOptions = {
   defaultPrefix: '!',
   prefixes: new Map(),
   commandDir: 'commands',
+  botPermissions: {}
 }
 
 class Handler {
   options: HandlerOptions;
   commands: Map<string, Command>;
   aliases: Map<string, Command>;
-  client: EventEmitter
+  client: EventEmitter;
+  botPermissions: object;
   constructor(options: HandlerOptions, client: EventEmitter) {
     this.options = Object.assign(defaultOptions, options)
+    this.botPermissions = options.botPermissions;
     this.commands = new Map();
     this.aliases = new Map();
     this.client = client;
@@ -34,6 +37,9 @@ class Handler {
       const command = this.getCommand(contentArray);
       if (command) {
         try {
+          if (command.botPermissions) {
+            if (this.botPermissions[command.botPermissions].run(msg, command)) return;
+          }
           await command.run(msg, contentArray.slice(1));
           return;
         } catch (err) {
