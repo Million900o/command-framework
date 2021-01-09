@@ -45,7 +45,7 @@ class Handler {
             if (command.cooldown) {
               const cooldown = command.cooldown;
               let userCooldown = this.cooldownBucket[`${msg.author.id}${command.name}`] || [];
-              if (userCooldown.length > cooldown.bucket) {
+              if (userCooldown.length >= cooldown.bucket) {
                 const cooldownTime = ((userCooldown[0] - Date.now()) / 1000).toFixed(2);
                 const response = {
                   embed: {
