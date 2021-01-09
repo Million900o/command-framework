@@ -41,19 +41,23 @@ class Handler {
         const command = this.getCommand(contentArray);
         if (command) {
           try {
-            if (command.botPermissions) {
-              if (!this.botPermissions[command.botPermissions](msg, command)) return;
-            }
+            if (command.botPermissions && !this.botPermissions[command.botPermissions](msg, command)) return;
             if (command.cooldown) {
-              console.log(command.cooldown)
               const cooldown = command.cooldown;
               let userCooldown = this.cooldownBucket[`${msg.author.id}${command.name}`] || 0;
-              console.log('User Cooldown', userCooldown);
-              console.log('Command Cooldown', cooldown.bucket);
-              if (userCooldown > cooldown.bucket) return;
+              if (userCooldown > cooldown.bucket) {
+                // TODO: Make response use a real time
+                const response = {
+                  embed: {
+                    title: `Slow down. You must wait ${(cooldown.time / 1000).toFixed(2)}s to use this command again.`,
+                    color: 0xE74C3C
+                  }
+                }
+                msg.reply(response)
+                return;
+              };
               userCooldown++;
               this.cooldownBucket[`${msg.author.id}${command.name}`] = userCooldown
-              console.log(this.cooldownBucket[`${msg.author.id}${command.name}`]);
               setTimeout(() => {
                 this.cooldownBucket[`${msg.author.id}${command.name}`] == 1 ? delete this.cooldownBucket[`${msg.author.id}${command.name}`] : this.cooldownBucket[`${msg.author.id}${command.name}`]--;
               }, cooldown.time || 1000 * 60 * 1);
@@ -73,7 +77,7 @@ class Handler {
           title: `Err: ${err}`
         }
       };
-      msg.channel.send(response).catch(console.log);
+      msg.reply(response).catch(console.log);
     }
   }
 
