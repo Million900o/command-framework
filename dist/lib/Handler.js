@@ -39,7 +39,7 @@ class Handler {
                     if (command) {
                         try {
                             if (command.botPermissions) {
-                                if (this.botPermissions[command.botPermissions](msg, command))
+                                if (!this.botPermissions[command.botPermissions](msg, command))
                                     return;
                             }
                             if (command.cooldown) {
