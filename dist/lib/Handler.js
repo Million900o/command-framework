@@ -44,16 +44,22 @@ class Handler {
                                     return;
                             }
                             if (command.cooldown) {
+                                console.log(command.cooldown);
                                 const cooldown = command.cooldown;
                                 let userCooldown = this.cooldownBucket[`${msg.author.id}${command.name}`] || 0;
+                                console.log('User Cooldown', userCooldown);
+                                console.log('Command Cooldown', cooldown.bucket);
                                 if (userCooldown > cooldown.bucket)
                                     return;
                                 userCooldown++;
                                 this.cooldownBucket[`${msg.author.id}${command.name}`] = userCooldown;
+                                console.log(this.cooldownBucket[`${msg.author.id}${command.name}`]);
                                 setTimeout(() => {
-                                    this.cooldownBucket[`${msg.author.id}${command.name}`]--;
+                                    this.cooldownBucket[`${msg.author.id}${command.name}`] == 1 ? delete this.cooldownBucket[`${msg.author.id}${command.name}`] : this.cooldownBucket[`${msg.author.id}${command.name}`]--;
                                 }, cooldown.time || 1000 * 60 * 1);
                             }
+                            else
+                                console.log('none');
                             yield command.run(msg, contentArray.slice(1));
                             return;
                         }
