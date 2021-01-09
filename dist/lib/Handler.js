@@ -24,6 +24,7 @@ class Handler {
         this.commands = new Map();
         this.aliases = new Map();
         this.client = client;
+        this.cooldownBucket = {};
         this.loadCommands(path_1.resolve(this.options.commandDir));
         client.on('message', (m) => this.runMessage(m));
     }
