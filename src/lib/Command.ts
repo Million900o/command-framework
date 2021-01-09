@@ -12,6 +12,7 @@ const defaultOptions: CommandOptions = {
   botPermissions: 100,
   description: 'No description set.',
   disabled: true,
+  cooldown: null,
 }
 
 class Command {
@@ -34,6 +35,7 @@ class Command {
     this.botPermissions = options.botPermissions;
     this.description = options.description;
     this.disabled = options.disabled;
+    this.cooldown = options.cooldown;
     // Other
     this.handler = handler;
     this.client = client;

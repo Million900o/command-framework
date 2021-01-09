@@ -1,3 +1,5 @@
+import Cooldown from "./CommandCooldown";
+
 interface CommandOptions {
   name: string;
   aliases: string[] | null;
@@ -5,6 +7,7 @@ interface CommandOptions {
   botPermissions: number;
   description: string;
   disabled: boolean;
+  cooldown: Cooldown | null;
 }
 
 export default CommandOptions;
