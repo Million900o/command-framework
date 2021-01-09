@@ -8,6 +8,7 @@ declare class Handler {
     aliases: Map<string, Command>;
     client: EventEmitter;
     botPermissions: object;
+    cooldownBucket: object;
     constructor(options: HandlerOptions, client: EventEmitter);
     runMessage(msg: any): Promise<undefined>;
     getCommand(content: string[]): Command | undefined;

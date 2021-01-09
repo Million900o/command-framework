@@ -29,32 +29,53 @@ class Handler {
     }
     runMessage(msg) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!msg || !msg.content)
-                return;
-            const prefix = this.options.defaultPrefix;
-            if (msg.content.startsWith(prefix)) {
-                const contentArray = msg.content.slice(prefix.length).split(' ').filter((e) => e);
-                const command = this.getCommand(contentArray);
-                if (command) {
-                    try {
-                        if (command.botPermissions) {
-                            if (this.botPermissions[command.botPermissions].run(msg, command))
-                                return;
+            try {
+                if (!msg || !msg.content)
+                    return;
+                const prefix = this.options.defaultPrefix;
+                if (msg.content.startsWith(prefix)) {
+                    const contentArray = msg.content.slice(prefix.length).split(' ').filter((e) => e);
+                    const command = this.getCommand(contentArray);
+                    if (command) {
+                        try {
+                            if (command.botPermissions) {
+                                if (this.botPermissions[command.botPermissions](msg, command))
+                                    return;
+                            }
+                            if (command.cooldown) {
+                                const cooldown = command.cooldown;
+                                let userCooldown = this.cooldownBucket[`${msg.author.id}${command.name}`] || 0;
+                                if (userCooldown > cooldown.bucket)
+                                    return;
+                                userCooldown++;
+                                this.cooldownBucket[`${msg.author.id}${command.name}`] = userCooldown;
+                                setTimeout(() => {
+                                    this.cooldownBucket[`${msg.author.id}${command.name}`]--;
+                                }, cooldown.time || 1000 * 60 * 1);
+                            }
+                            yield command.run(msg, contentArray.slice(1));
+                            return;
                         }
-                        yield command.run(msg, contentArray.slice(1));
-                        return;
+                        catch (err) {
+                            console.warn(err);
+                            msg.channel.send(err);
+                            return;
+                        }
                     }
-                    catch (err) {
-                        console.warn(err);
-                        msg.channel.send(err);
+                    else
                         return;
-                    }
                 }
                 else
                     return;
             }
-            else
-                return;
+            catch (err) {
+                const response = {
+                    embed: {
+                        title: `Err: ${err}`
+                    }
+                };
+                msg.channel.send(response).catch(console.log);
+            }
         });
     }
     getCommand(content) {
