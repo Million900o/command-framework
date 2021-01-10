@@ -15,7 +15,12 @@ const defaultOptions = {
     defaultPrefix: '!',
     prefixes: new Map(),
     commandDir: 'commands',
-    botPermissions: {}
+    botPermissions: {},
+    logger: {
+        log: () => { },
+        warn: () => { },
+        error: () => { },
+    }
 };
 class Handler {
     constructor(options, client) {
@@ -25,6 +30,7 @@ class Handler {
         this.aliases = new Map();
         this.client = client;
         this.cooldownBucket = {};
+        this.logger = options.logger;
         this.loadCommands(path_1.resolve(this.options.commandDir));
         client.on('message', (m) => this.runMessage(m));
     }
@@ -107,7 +113,7 @@ class Handler {
                         command.aliases.forEach((alias) => {
                             this.aliases.set(alias, command);
                         });
-                        console.log('Loaded Command', command.name);
+                        this.logger.log('Loaded Command', command.name);
                         return true;
                     }
                     catch (err) {

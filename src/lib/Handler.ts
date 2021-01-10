@@ -3,7 +3,7 @@ import { readdir, statSync } from 'fs';
 import { resolve } from 'path';
 
 import HandlerOptions from '../types/HandlerOptions'
-import Cooldown from '../types/CommandCooldown';
+import Logger from '../types/BasicLogger';
 
 import Command from "./Command";
 
@@ -11,7 +11,12 @@ const defaultOptions: HandlerOptions = {
   defaultPrefix: '!',
   prefixes: new Map(),
   commandDir: 'commands',
-  botPermissions: {}
+  botPermissions: {},
+  logger: {
+    log: () => {},
+    warn: () => {},
+    error: () => {},
+  }
 }
 
 class Handler {
@@ -21,6 +26,7 @@ class Handler {
   client: EventEmitter;
   botPermissions: object;
   cooldownBucket: object;
+  logger: Logger;
   constructor(options: HandlerOptions, client: EventEmitter) {
     this.options = Object.assign(defaultOptions, options)
     this.botPermissions = options.botPermissions;
@@ -28,6 +34,7 @@ class Handler {
     this.aliases = new Map();
     this.client = client;
     this.cooldownBucket = {};
+    this.logger = options.logger
     this.loadCommands(resolve(this.options.commandDir))
     client.on('message', (m) => this.runMessage(m));
   }
@@ -100,7 +107,7 @@ class Handler {
             command.aliases.forEach((alias: string) => {
               this.aliases.set(alias, command);
             })
-            console.log('Loaded Command', command.name)
+            this.logger.log('Loaded Command', command.name)
             return true;
           } catch (err) {
             console.warn(err);
