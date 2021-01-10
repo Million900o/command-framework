@@ -45,6 +45,11 @@ class Handler {
                     const command = this.getCommand(contentArray);
                     if (command) {
                         try {
+                            if (command.disabled) {
+                                this.logger.warn(`${msg.author.username}#${msg.author.discriminator} (${msg.author.id})`, 'ran disabled command', command.name);
+                                return;
+                            }
+                            ;
                             if (command.botPermissions && !this.botPermissions[command.botPermissions](msg, command))
                                 return;
                             if (command.cooldown) {

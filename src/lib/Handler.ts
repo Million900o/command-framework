@@ -48,12 +48,16 @@ class Handler {
         const command = this.getCommand(contentArray);
         if (command) {
           try {
+            if (command.disabled) {
+              this.logger.warn(`${msg.author.username}#${msg.author.discriminator} (${msg.author.id})`, 'ran disabled command', command.name);
+              return;
+            };
             if (command.botPermissions && !this.botPermissions[command.botPermissions](msg, command)) return;
             if (command.cooldown) {
               const cooldown = command.cooldown;
               let userCooldown = this.cooldownBucket[`${msg.author.id}${command.name}`] || [];
               if (userCooldown.length >= cooldown.bucket) {
-                this.logger.log(`${msg.author.username}#${msg.author.discriminator} (${msg.author.id})`, 'triggered ratelimit for command', command.name)
+                this.logger.log(`${msg.author.username}#${msg.author.discriminator} (${msg.author.id})`, 'triggered ratelimit for command', command.name);
                 const cooldownTime = ((userCooldown[0] - Date.now()) / 1000).toFixed(2);
                 const response = {
                   embed: {
