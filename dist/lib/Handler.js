@@ -51,6 +51,7 @@ class Handler {
                                 const cooldown = command.cooldown;
                                 let userCooldown = this.cooldownBucket[`${msg.author.id}${command.name}`] || [];
                                 if (userCooldown.length >= cooldown.bucket) {
+                                    this.logger.log(`${msg.author.username} (${msg.author.id})`, 'triggered ratelimit for command', command.name);
                                     const cooldownTime = ((userCooldown[0] - Date.now()) / 1000).toFixed(2);
                                     const response = {
                                         embed: {
@@ -68,6 +69,7 @@ class Handler {
                                     this.cooldownBucket[`${msg.author.id}${command.name}`].length == 1 ? delete this.cooldownBucket[`${msg.author.id}${command.name}`] : this.cooldownBucket[`${msg.author.id}${command.name}`].shift();
                                 }, cooldown.time || 1000 * 60 * 1);
                             }
+                            this.logger.log(`${msg.author.username} (${msg.author.id})`, 'ran command', command.name);
                             yield command.run(msg, contentArray.slice(1));
                             return;
                         }
